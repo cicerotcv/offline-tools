@@ -22,7 +22,7 @@ cp dist/index.html "$out/${name}.html"
 
 pnpm build >/dev/null
 find dist -exec touch -h -d "@${epoch}" {} + 2>/dev/null ||
-  find dist -exec touch -h -t "$(TZ=UTC date -r "$epoch" +%Y%m%d%H%M.%S)" {} +
+  TZ=UTC find dist -exec touch -h -t "$(TZ=UTC date -r "$epoch" +%Y%m%d%H%M.%S)" {} +
 rm -f "$out/${name}-site.zip"
 (cd dist && find . -type f | LC_ALL=C sort | TZ=UTC zip -X -D -q -@ "$out/${name}-site.zip")
 
