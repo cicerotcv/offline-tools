@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='-2%200%20100%20100'%3E%3Cstyle%3Epath%7Bfill:%23F7931A%7D%40media%28prefers-color-scheme:dark%29%7Bpath%7Bfill:%23F7931A%7D%7D%3C/style%3E%3Cpath%20d='M48%2050h24v24H48V50ZM0%2054a4%204%200%200%201%204-4h20v24H4a4%204%200%200%201-4-4V54ZM0%206a4%204%200%200%201%204-4h16a4%204%200%200%201%204%204v20H4a4%204%200%200%201-4-4V6ZM24%2026h24v24H24V26ZM24%2074h24v20a4%204%200%200%201-4%204H28a4%204%200%200%201-4-4V74ZM24%2022a4%204%200%200%200%204%204h-4v-4ZM24%2070a4%204%200%200%200%204%204h-4v-4ZM72%2070a4%204%200%200%200%204%204h-4v-4ZM48%2046a4%204%200%200%200%204%204h-4v-4ZM24%2030a4%204%200%200%200-4-4h4v4ZM24%2078a4%204%200%200%200-4-4h4v4ZM48%206a4%204%200%200%201%204-4h16a4%204%200%200%201%204%204v20H48V6ZM72%2026h20a4%204%200%200%201%204%204v16a4%204%200%200%201-4%204H72V26ZM72%2074h20a4%204%200%200%201%204%204v16a4%204%200%200%201-4%204H76a4%204%200%200%201-4-4V74ZM72%2022a4%204%200%200%200%204%204h-4v-4ZM72%2030a4%204%200%200%200-4-4h4v4ZM72%2078a4%204%200%200%200-4-4h4v4ZM48%2054a4%204%200%200%200-4-4h4v4ZM76%2050a4%204%200%200%200-4%204v-4h4ZM28%2050a4%204%200%200%200-4%204v-4h4ZM52%2026a4%204%200%200%200-4%204v-4h4ZM52%2074a4%204%200%200%200-4%204v-4h4ZM44%2074a4%204%200%200%200%204-4v4h-4ZM68%2050a4%204%200%200%200%204-4v4h-4ZM20%2050a4%204%200%200%200%204-4v4h-4ZM44%2026a4%204%200%200%200%204-4v4h-4Z'/%3E%3C/svg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#fbf9f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#15172a" media="(prefers-color-scheme: dark)" />
+    <script>
+      // Apply the theme before first paint (mirrors ThemeProvider) to avoid a light flash.
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.classList.add(theme);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

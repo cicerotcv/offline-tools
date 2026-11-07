@@ -1,0 +1,125 @@
+name: Release
+
+# Publishes vX.Y.Z when a commit on main raises the package.json version, which
+# only the release PR opened by prepare-release.yml does. Runs after CI passes
+# on that push, so the checks are not repeated. Manual run: publishes the
+# version on main if its tag is missing (to retry a failed release).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # create the tag and the release
+      id-token: write # sign the provenance attestation
+      attestations: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Is this a release commit?
+        id: check
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v${version}" >/dev/null; then
+            echo "v${version} is already released."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_run" ]; then
+            previous="$(git show HEAD^:package.json | node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version")"
+            if ! node scripts/next-version.mjs --is-release "${previous}"; then
+              echo "Version ${version} was not raised (previous ${previous}): not a release commit."
+              echo "publish=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "Publishing v${version}."
+          echo "publish=true" >> "$GITHUB_OUTPUT"
+
+      - if: steps.check.outputs.publish == 'true'
+        uses: pnpm/action-setup@v4
+
+      - if: steps.check.outputs.publish == 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        if: steps.check.outputs.publish == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build artifacts twice (reproducibility)
+        if: steps.check.outputs.publish == 'true'
+        run: |
+          scripts/build-release.sh out/a
+          scripts/build-release.sh out/b
+          diff out/a/SHA256SUMS out/b/SHA256SUMS
+          echo "Both builds produced identical artifacts."
+
+      - name: Attest build provenance
+        if: steps.check.outputs.publish == 'true'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            out/a/*.html
+            out/a/*.zip
+
+      - name: Publish release
+        if: steps.check.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.check.outputs.version }}
+          SHA: ${{ steps.check.outputs.sha }}
+        run: |
+          cd out/a
+          {
+            echo "Offline, client-side crypto and Bitcoin tools. Everything runs in your browser; the page cannot reach the network."
+            echo
+            echo "## Files"
+            echo
+            echo "- \`offline-tools-${TAG}.html\`: the whole app in one file. Copy it to a USB stick and open it on an offline computer (Tails works)."
+            echo "- \`offline-tools-${TAG}-site.zip\`: the hosted build, to serve yourself."
+            echo
+            echo "## SHA-256"
+            echo
+            echo '```'
+            cat SHA256SUMS
+            echo '```'
+            echo
+            echo "## Verify before use"
+            echo
+            echo "1. Checksums: \`shasum -a 256 -c SHA256SUMS\` (or compare with the app's Hash Tool on a trusted machine)."
+            echo "2. Provenance: \`gh attestation verify offline-tools-${TAG}.html --repo ${GITHUB_REPOSITORY}\` proves the file was built by this repository's release workflow from this tag."
+            echo "3. Rebuild: the build is reproducible. Check out the tag and run \`scripts/build-release.sh out\`; the hashes must match."
+          } > notes.md
+          gh release create "${TAG}" --target "${SHA}" \
+            --title "Offline Tools ${TAG}" \
+            --notes-file notes.md \
+            *.html *.zip SHA256SUMS

@@ -1,0 +1,550 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
+
+/* Geist / Geist Mono: latin and latin-ext only (UI copy is English). */
+@font-face {
+  font-family: 'Geist Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../node_modules/@fontsource-variable/geist/files/geist-latin-ext-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Geist Mono Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../node_modules/@fontsource-variable/geist-mono/files/geist-mono-latin-ext-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Geist Mono Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../node_modules/@fontsource-variable/geist-mono/files/geist-mono-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+@theme inline {
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-accent-strong: var(--accent-strong);
+  --color-border-accent: var(--border-accent);
+  --color-emphasis: var(--emphasis);
+  --color-numeral: var(--numeral);
+  --color-rule: var(--rule);
+  --color-band: var(--band);
+  --color-band-foreground: var(--band-foreground);
+  --color-band-muted: var(--band-muted);
+  --color-emphasis-on-dark: var(--emphasis-on-dark);
+  --color-numeral-on-dark: var(--numeral-on-dark);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Surface ladder: inset well < background < card. */
+  --color-surface-inset: var(--surface-inset);
+  --color-card-edge: var(--card-edge);
+  --color-border-strong: var(--input);
+  /* Elevation is a 1px top highlight, not a drop shadow. */
+  --shadow-card: var(--elevation-card);
+  --shadow-popover: var(--elevation-popover);
+  --shadow-floating: var(--elevation-floating);
+
+  /* Type roles. */
+  --text-title: 2rem;
+  --text-title--line-height: 1.1;
+  --text-title--letter-spacing: -0.03em;
+  --text-title--font-weight: 600;
+  --text-heading: 1rem;
+  --text-heading--line-height: 1.35;
+  --text-heading--letter-spacing: -0.01em;
+  --text-heading--font-weight: 600;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+  --text-label--font-weight: 500;
+}
+
+/*
+ * Identity: 7 tones + an indigo complement (see docs/direcao-de-arte.md).
+ * Components never use tone-N directly; they use the semantic/role tokens below.
+ */
+:root {
+  --color-tone-1: oklch(0.75 0.17 60); /* Bitcoin orange: brand, CTA */
+  --color-tone-2: oklch(0.525 0.145 47); /* burnt orange: emphasis text (AA) */
+  --color-tone-3: oklch(0.85 0.09 65); /* peach-orange: rules, accent borders */
+  --color-tone-4: oklch(0.945 0.035 70); /* peach: tonal surface */
+  --color-tone-5: oklch(0.955 0.008 70); /* warm neutral surface */
+  --color-tone-6: oklch(0.985 0.004 75); /* page background */
+  --color-tone-7: oklch(0.21 0.012 60); /* ink */
+  --color-indigo-1: oklch(0.27 0.08 275); /* accent band */
+  --color-indigo-2: oklch(0.5 0.13 277); /* info, focus, links */
+
+  --radius: 0.5rem;
+  --background: var(--color-tone-6);
+  --foreground: var(--color-tone-7);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--color-tone-7);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--color-tone-7);
+  --primary: var(--color-tone-1);
+  --primary-foreground: var(--color-tone-7);
+  --secondary: var(--color-tone-4);
+  --secondary-foreground: var(--color-tone-7);
+  --muted: var(--color-tone-5);
+  --muted-foreground: oklch(0.49 0.014 60);
+  --accent: var(--color-tone-4);
+  --accent-foreground: var(--color-tone-7);
+  --destructive: oklch(0.55 0.2 27);
+  --success: oklch(0.52 0.12 150);
+  --warning: oklch(0.55 0.11 95);
+  --info: var(--color-indigo-2);
+  --border: color-mix(in oklab, var(--color-tone-5), var(--color-tone-7) 9%);
+  --input: color-mix(in oklab, var(--color-tone-5), var(--color-tone-7) 16%);
+  --ring: var(--color-indigo-2);
+
+  /* Role tokens */
+  --accent-strong: var(--color-tone-2);
+  --border-accent: var(--color-tone-3);
+  --emphasis: var(--color-tone-2);
+  --numeral: var(--color-tone-2);
+  --rule: var(--color-tone-3);
+  --band: var(--color-indigo-1);
+  --band-foreground: var(--color-tone-6);
+  --band-muted: oklch(0.8 0.03 275);
+  --emphasis-on-dark: var(--color-tone-1);
+  --numeral-on-dark: var(--color-tone-1);
+  --highlight: var(--color-tone-1);
+  --highlight-foreground: var(--color-tone-7);
+
+  --chart-1: var(--color-tone-1);
+  --chart-2: var(--color-indigo-2);
+  --chart-3: var(--color-tone-2);
+  --chart-4: var(--color-tone-3);
+  --chart-5: oklch(0.65 0.01 70);
+  --sidebar: var(--color-tone-5);
+  --sidebar-foreground: var(--color-tone-7);
+  --sidebar-primary: var(--color-tone-1);
+  --sidebar-primary-foreground: var(--color-tone-7);
+  --sidebar-accent: var(--color-tone-4);
+  --sidebar-accent-foreground: var(--color-tone-7);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--color-indigo-2);
+
+  --surface-inset: color-mix(
+    in oklab,
+    var(--color-tone-5),
+    var(--color-tone-7) 3.5%
+  );
+  --card-edge: color-mix(in oklab, var(--color-tone-7) 7%, transparent);
+  --elevation-card:
+    inset 0 1px 0 oklch(1 0 0 / 80%), 0 1px 2px oklch(0.21 0.012 60 / 5%);
+  --elevation-popover:
+    0 10px 30px -8px oklch(0.21 0.012 60 / 18%),
+    0 2px 6px oklch(0.21 0.012 60 / 8%);
+  --elevation-floating:
+    inset 0 1px 0 oklch(1 0 0 / 80%), 0 1px 2px oklch(0.21 0.012 60 / 6%),
+    0 12px 32px -14px oklch(0.21 0.012 60 / 22%);
+}
+
+/* Dark theme: the indigo complement becomes the base, orange stays the brand. */
+.dark {
+  --background: oklch(0.175 0.025 275);
+  --foreground: oklch(0.95 0.008 75);
+  --card: oklch(0.215 0.03 275);
+  --card-foreground: oklch(0.95 0.008 75);
+  --popover: oklch(0.225 0.032 275);
+  --popover-foreground: oklch(0.95 0.008 75);
+  --primary: var(--color-tone-1);
+  --primary-foreground: var(--color-tone-7);
+  --secondary: oklch(0.26 0.04 275);
+  --secondary-foreground: oklch(0.95 0.008 75);
+  --muted: oklch(0.245 0.032 275);
+  --muted-foreground: oklch(0.73 0.02 275);
+  --accent: oklch(0.28 0.04 275);
+  --accent-foreground: oklch(0.95 0.008 75);
+  --destructive: oklch(0.68 0.18 25);
+  --success: oklch(0.74 0.14 150);
+  --warning: oklch(0.86 0.14 95);
+  --info: oklch(0.72 0.11 277);
+  --border: oklch(0.9 0.03 275 / 11%);
+  --input: oklch(0.3 0.04 275);
+  --ring: oklch(0.68 0.12 277);
+
+  --accent-strong: oklch(0.8 0.14 62);
+  --border-accent: oklch(0.75 0.17 60 / 40%);
+  --emphasis: var(--color-tone-1);
+  --numeral: oklch(0.8 0.14 62);
+  --rule: oklch(0.75 0.17 60 / 40%);
+  --band: oklch(0.14 0.03 275);
+  --band-foreground: oklch(0.95 0.008 75);
+  --band-muted: oklch(0.75 0.03 275);
+
+  --chart-1: var(--color-tone-1);
+  --chart-2: oklch(0.72 0.11 277);
+  --chart-3: oklch(0.8 0.14 62);
+  --chart-4: oklch(0.6 0.12 50);
+  --chart-5: oklch(0.55 0.03 275);
+  --sidebar: oklch(0.155 0.025 275);
+  --sidebar-foreground: oklch(0.95 0.008 75);
+  --sidebar-primary: var(--color-tone-1);
+  --sidebar-primary-foreground: var(--color-tone-7);
+  --sidebar-accent: oklch(0.25 0.04 275);
+  --sidebar-accent-foreground: oklch(0.95 0.008 75);
+  --sidebar-border: oklch(0.9 0.03 275 / 9%);
+  --sidebar-ring: oklch(0.68 0.12 277);
+
+  --surface-inset: oklch(0.155 0.024 275);
+  --card-edge: oklch(0.95 0.008 75 / 7%);
+  --input: oklch(0.95 0.008 75 / 14%);
+  --elevation-card: inset 0 1px 0 oklch(1 0 0 / 5%);
+  --elevation-floating:
+    inset 0 1px 0 oklch(1 0 0 / 6%),
+    0 14px 36px -12px oklch(0.06 0.02 275 / 75%),
+    0 2px 6px oklch(0.06 0.02 275 / 40%);
+  --elevation-popover:
+    inset 0 1px 0 oklch(1 0 0 / 6%),
+    0 10px 28px -6px oklch(0.08 0.02 275 / 70%),
+    0 2px 6px oklch(0.08 0.02 275 / 45%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+    text-rendering: optimizeLegibility;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    @apply bg-primary/25 text-foreground;
+  }
+  code,
+  kbd,
+  samp,
+  pre {
+    @apply font-mono;
+  }
+}
+
+@layer utilities {
+  /* Fine noise texture for large surfaces; pointer-events-none overlay. */
+  .bg-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+}
+
+/* Bit-grid motif: a few pixels light up once ("computing locally"). */
+@media (prefers-reduced-motion: no-preference) {
+  .bit-pixel-on {
+    animation: bit-pixel-on 900ms ease-out both;
+  }
+}
+
+@keyframes bit-pixel-on {
+  0% {
+    opacity: 0.12;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/*
+ * Highlight for body text (see Highlight component): a solid block of the
+ * brand color behind the phrase, no gradient, no animation.
+ */
+.marker {
+  color: var(--highlight-foreground);
+  background-color: var(--highlight);
+  border-radius: 1px;
+  padding: 0.05em 0.28em;
+  margin-inline: 0.02em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/*
+ * Shamir share cards: rendered only while printing, as many per page as fit,
+ * black on white. Everything else on the page is hidden.
+ */
+@media screen {
+  .print-cards {
+    display: none;
+  }
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  body:has(.print-cards) > :not(.print-cards) {
+    display: none !important;
+  }
+  .print-cards {
+    color: #000;
+    background: #fff;
+    font-family: var(--font-sans);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* As many cards per page as fit; a card never splits across pages. */
+  .print-card {
+    break-inside: avoid;
+    width: fit-content;
+    margin: 0 auto 9mm;
+  }
+  /* Front and back side by side: cut the outline, fold on the center. */
+  .pc-pair {
+    display: flex;
+    outline: 0.3mm dashed #9a9a9a;
+    outline-offset: 1.5mm;
+  }
+  .pc-face {
+    /* ISO/IEC 7810 ID-1, the credit card size. */
+    width: 85.6mm;
+    height: 53.98mm;
+    aspect-ratio: 85.6 / 53.98;
+    box-sizing: border-box;
+    padding: 4mm;
+    overflow: hidden;
+    border: 0.35mm solid #000;
+    border-radius: 3.18mm;
+  }
+  .pc-back {
+    border-left-style: dashed;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2mm;
+  }
+  .pc-front {
+    border-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    display: grid;
+    grid-template-columns: 1fr 42mm;
+    gap: 3mm;
+  }
+  .pc-front-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .pc-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5mm;
+    font-family: var(--font-mono);
+    font-size: 2.2mm;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .pc-mark {
+    width: 3.2mm;
+    height: 3.2mm;
+    fill: #000;
+  }
+  .pc-number {
+    font-family: var(--font-mono);
+    font-size: 13mm;
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+  }
+  .pc-number span {
+    font-size: 5.5mm;
+    font-weight: 400;
+    color: #555;
+    letter-spacing: 0;
+  }
+  .pc-title {
+    margin-top: 1mm;
+    font-size: 2.6mm;
+    font-weight: 600;
+  }
+  .pc-facts {
+    display: grid;
+    gap: 0.8mm;
+    font-size: 2.3mm;
+  }
+  .pc-facts div {
+    display: flex;
+    justify-content: space-between;
+    gap: 2mm;
+    border-top: 0.2mm solid #000;
+    padding-top: 0.8mm;
+  }
+  .pc-facts dt {
+    color: #555;
+  }
+  .pc-facts dd {
+    font-family: var(--font-mono);
+  }
+  .pc-qr {
+    align-self: center;
+  }
+  .pc-qr svg {
+    width: 42mm;
+    height: 42mm;
+    display: block;
+  }
+  .pc-back-head {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 2.2mm;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding-bottom: 1.2mm;
+    border-bottom: 0.2mm solid #000;
+  }
+  /* Height budget: head 4 + rows 25 + steps 6 + gaps 4 + padding 8 = 47 of 54 mm. */
+  .pc-share {
+    flex: none;
+    display: grid;
+    gap: 0.6mm;
+    background: #f2f2f2;
+    border-radius: 1.5mm;
+    padding: 1.6mm 2.4mm;
+  }
+  .pc-share li {
+    display: grid;
+    grid-template-columns: 4mm repeat(6, 1fr);
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 2.6mm;
+    line-height: 1.15;
+  }
+  .pc-row {
+    color: #8a8a8a;
+    font-size: 2mm;
+  }
+  /* Compact density: 8 groups per row, up to 10 rows (see lib/cards). */
+  .pc-compact .pc-share {
+    gap: 0.4mm;
+    padding: 1.4mm 2.2mm;
+  }
+  .pc-compact .pc-share li {
+    grid-template-columns: 3.6mm repeat(8, 1fr);
+    font-size: 2.2mm;
+    line-height: 1.1;
+  }
+  .pc-compact .pc-row {
+    font-size: 1.7mm;
+  }
+  /* Dense density: 9 groups per row, up to 11 rows. */
+  .pc-dense .pc-share {
+    gap: 0.3mm;
+    padding: 1.3mm 2mm;
+  }
+  .pc-dense .pc-share li {
+    grid-template-columns: 3.2mm repeat(9, 1fr);
+    font-size: 2mm;
+    line-height: 1.1;
+  }
+  .pc-dense .pc-row {
+    font-size: 1.6mm;
+  }
+  .pc-steps {
+    margin-top: auto;
+    font-size: 2mm;
+    line-height: 1.3;
+    color: #333;
+  }
+  .pc-cut-note {
+    margin-top: 5mm;
+    text-align: center;
+    font-size: 2.6mm;
+    color: #8a8a8a;
+  }
+}

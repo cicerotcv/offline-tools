@@ -1,0 +1,77 @@
+name: Prepare release
+
+# Manual: bumps package.json and opens a release PR to main. Nothing is
+# published here: merging that PR is what creates the release (release.yml)
+# and lets Vercel deploy production (scripts/vercel-ignore-build.sh).
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump
+        required: true
+        type: choice
+        options: [patch, minor, major]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: prepare-release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Next version
+        id: version
+        env:
+          BUMP: ${{ inputs.bump }}
+        run: |
+          next="$(node scripts/next-version.mjs "$BUMP")"
+          echo "next=${next}" >> "$GITHUB_OUTPUT"
+          echo "Next version: ${next}"
+          if git ls-remote --exit-code --tags origin "refs/tags/v${next}" >/dev/null; then
+            echo "Tag v${next} already exists." >&2
+            exit 1
+          fi
+          if git ls-remote --exit-code --heads origin "release/v${next}" >/dev/null; then
+            echo "Branch release/v${next} already exists: merge or close its PR first." >&2
+            exit 1
+          fi
+
+      - name: Open the release PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "release/v${NEXT}"
+          node scripts/next-version.mjs --write "${NEXT}"
+          git commit -am "chore(release): v${NEXT}"
+          git push origin "release/v${NEXT}"
+
+          last="$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)"
+          {
+            echo "Bumps \`package.json\` to **${NEXT}**."
+            echo
+            echo "Merging this PR runs CI on \`main\`, then publishes the release \`v${NEXT}\` (reproducible build, provenance attestation, \`SHA256SUMS\`) and lets Vercel deploy production."
+            echo
+            echo "## Changes since ${last:-the first commit}"
+            echo
+            git log --no-merges --format='- %s' ${last:+${last}..}HEAD~1
+          } > body.md
+          gh pr create --base main --head "release/v${NEXT}" \
+            --title "chore(release): v${NEXT}" --body-file body.md

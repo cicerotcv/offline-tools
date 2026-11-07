@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+    # ready_for_review: a draft PR starts CI when it is marked ready.
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.env.example'
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # Only PR runs are superseded; a push run on main may be a release commit.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: ci
+    # Draft PRs do not spend minutes until they are marked ready.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The static pages read the last commit date for sitemap lastmod.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type-check
+        run: pnpm exec tsc -b
+
+      - name: Unit, property and vector tests
+        run: pnpm test:run
+
+      # No Chrome install: ubuntu-latest ships Google Chrome, the channel
+      # playwright.config.ts uses.
+      - name: Chrome version
+        run: google-chrome --version
+
+      - name: Hosted build + e2e (preview and static)
+        run: |
+          pnpm build
+          pnpm exec playwright test --project=preview --project=static
+
+      - name: Single-file build + e2e (file://)
+        run: |
+          pnpm build:single
+          pnpm exec playwright test --project=single
+
+      - name: Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
